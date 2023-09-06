@@ -1,4 +1,3 @@
-(set-background-color "honeydew")
 
 ;; Unset C-z so we don't accidentally hide Emacs
 (global-unset-key (kbd "C-z"))
@@ -225,3 +224,41 @@ if the new path's directories does not exist, create them."
 (setq magit-define-global-key-bindings 'recommended)
 
 (message "init.el has been loaded!")
+
+;;; ======================================================
+;;;
+;;;   Org Mode(s)
+;;;
+
+(use-package org-ai
+  :ensure t
+  :commands (org-ai-mode
+             org-ai-global-mode)
+  :init
+  (add-hook 'org-mode-hook #'org-ai-mode) ; enable org-ai in org-mode
+  (org-ai-global-mode) ; installs global keybindings on C-c M-a
+  :config
+  (setq org-ai-default-chat-model "gpt-4") ; if you are on the gpt-4 beta:
+  (org-ai-install-yasnippets)) ; if you are using yasnippet and want `ai` snippets
+
+
+;;; ======================================================
+;;;
+;;;   Secret Keys
+;;;
+
+(load (concat (file-name-directory user-init-file)
+	      "secrets.el"))
+
+
+;;; ======================================================
+;;;
+;;;   Custom functions and minor modes
+;;;
+
+(recentf-mode 1)
+
+(defun open-all-recent-files ()
+    "Open all recent files."
+    (interactive)
+    (dolist (file recentf-list) (find-file file)))
