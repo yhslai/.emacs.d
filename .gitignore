@@ -6,7 +6,7 @@ server/
 
 # Backup 
 *.el~
-\#*#
+\#*
 
 # Compiled Elisp files
 *.elc

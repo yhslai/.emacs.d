@@ -220,8 +220,16 @@ if the new path's directories does not exist, create them."
 ;;;
 ;;;   Magit
 ;;;
+(use-package magit
+    :bind
+    (:map magit-file-section-map
+	  ("RET" . magit-diff-visit-file-other-window)
+	  :map magit-hunk-section-map
+	  ("RET" . magit-diff-visit-file-other-window))
+    :config
+    (setq magit-define-global-key-bindings 'recommended)
+    )
 
-(setq magit-define-global-key-bindings 'recommended)
 
 (message "init.el has been loaded!")
 
