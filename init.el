@@ -230,6 +230,23 @@ if the new path's directories does not exist, create them."
 ;;;   Org Mode(s)
 ;;;
 
+(add-hook 'org-mode-hook #'visual-line-mode)
+(add-hook 'text-mode-hook #'visual-line-mode)
+
+(use-package visual-fill-column
+  :ensure t
+  :config
+  (setq-default visual-fill-column-width 100)
+  (add-hook 'visual-line-mode-hook #'visual-fill-column-mode))
+
+(use-package org
+  :mode (("\\.org$" . org-mode))
+  :ensure t
+  :config
+  (progn
+    ;; config stuff
+    ))
+
 (use-package org-ai
   :ensure t
   :commands (org-ai-mode
@@ -243,13 +260,6 @@ if the new path's directories does not exist, create them."
   (add-hook 'org-mode-hook 'display-line-numbers-mode))
   
 
-(use-package visual-fill-column
-  :ensure t
-  :config
-  (setq-default visual-fill-column-width 80)
-  (add-hook 'org-mode-hook  'visual-fill-column-mode)
-  (add-hook 'text-mode-hook 'visual-fill-column-mode))
-
 
 ;; We define <C-j> as <C-x> for easier finger pose, so let's rebind these
 (define-key org-mode-map (kbd "<normal-state> C-j") nil)
@@ -261,11 +271,10 @@ if the new path's directories does not exist, create them."
 (define-key org-mode-map (kbd "C-M-j") 'org-forward-heading-same-level)
 (define-key org-mode-map (kbd "C-M-k") 'org-backward-heading-same-level)
 
-
-(global-display-fill-column-indicator-mode 1)
-(setq-default fill-column 120)
-(setq-default display-fill-column-indicator t)
-(setq-default display-fill-column-indicator-character ?|)
+;; (global-display-fill-column-indicator-mode 1)
+;; (setq-default fill-column 120)
+;; (setq-default display-fill-column-indicator t)
+;; (setq-default display-fill-column-indicator-character ?|)
 
 
 ;;; ======================================================
@@ -307,7 +316,7 @@ if the new path's directories does not exist, create them."
 
 (defun split-window-below-and-focus ()
   (interactive)
-  (split-window-belw)
+  (split-window-below)
   (other-window 1))
 
 (defun split-window-right-and-focus ()

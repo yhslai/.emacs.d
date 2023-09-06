@@ -3,7 +3,8 @@ auto-save-list/
 transient/
 history
 server/
-recentf
+recentf/
+eshell/
 
 # My test files
 org-test/
