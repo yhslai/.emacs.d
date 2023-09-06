@@ -1,0 +1,37 @@
+# Transient & auto-save
+auto-save-list/
+transient/
+history
+server/
+
+# Backup 
+*.el~
+\#*#
+
+# Compiled Elisp files
+*.elc
+
+# Custom file (this is typically where `customize` saves its settings, and it can vary depending on your setup)
+custom.el
+
+# Package management (unless you want to version-control all installed packages, which is generally not recommended)
+elpa/
+quelpa/
+straight/
+var/
+
+# Byte-compiled files for performance
+*.elc
+
+# OS generated files
+.DS_Store
+*~
+*.swp
+*.swo
+
+# Personal sensitive data (optional: depends on what you store)
+secrets.el
+
+# Other potential caches or local configurations
+.url/
+.tramp
