@@ -251,6 +251,17 @@ if the new path's directories does not exist, create them."
   (add-hook 'text-mode-hook 'visual-fill-column-mode))
 
 
+;; We define <C-j> as <C-x> for easier finger pose, so let's rebind these
+(define-key org-mode-map (kbd "<normal-state> C-j") nil)
+(define-key org-mode-map (kbd "<normal-state> C-k") nil)
+(define-key org-mode-map (kbd "C-j") nil)
+(define-key org-mode-map (kbd "C-k") nil)
+(define-key org-mode-map (kbd "<normal-state> C-M-j") 'org-forward-heading-same-level)
+(define-key org-mode-map (kbd "<normal-state> C-M-k") 'org-backward-heading-same-level)
+(define-key org-mode-map (kbd "C-M-j") 'org-forward-heading-same-level)
+(define-key org-mode-map (kbd "C-M-k") 'org-backward-heading-same-level)
+
+
 (global-display-fill-column-indicator-mode 1)
 (setq-default fill-column 120)
 (setq-default display-fill-column-indicator t)
@@ -306,6 +317,7 @@ if the new path's directories does not exist, create them."
 
 (global-set-key (kbd "C-x @") 'split-window-below-and-focus)
 (global-set-key (kbd "C-x #") 'split-window-right-and-focus)
+
 
 ;;; =======================================================
 ;;;
