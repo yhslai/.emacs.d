@@ -127,7 +127,7 @@ if the new path's directories does not exist, create them."
 ;; we won't set these, but they're good to know about
 ;;
 ;; (setq-default indent-tabs-mode nil)
-;; (setq-default tab-width 4)
+(setq-default tab-width 4)
 
 ;; misc. ui tweaks
 (blink-cursor-mode -1)                                ; steady cursor
@@ -138,10 +138,7 @@ if the new path's directories does not exist, create them."
 
 ;; display line numbers in programming mode
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
-(setq-default display-line-numbers-width 3)           ; set a minimum width
-
-;; nice line wrapping when working with text
-(add-hook 'text-mode-hook 'visual-line-mode)
+(setq-default display-line-numbers-width 4)           ; set a minimum width
 
 ;; ;; modes to highlight the current line with
 (let ((hl-line-hooks '(text-mode-hook prog-mode-hook)))
@@ -181,7 +178,6 @@ if the new path's directories does not exist, create them."
 
 
 ;; enable evil-mode by default
-
 (use-package evil
   :ensure t
   :init
@@ -198,28 +194,26 @@ if the new path's directories does not exist, create them."
 
 (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
 (define-key evil-visual-state-map (kbd "C-u") 'evil-scroll-up)
+(define-key evil-insert-state-map (kbd "TAB") 'tab-to-tab-stop)
 
+(define-key evil-normal-state-map (kbd "C-o") 'other-window)
+(define-key evil-insert-state-map (kbd "C-o") 'other-window)
+(define-key evil-visual-state-map (kbd "C-o") 'other-window)
 
-;;; =======================================================
-;;;
-;;;   My own theme
-;;;
+(use-package undo-tree
+  :ensure t
+  :after evil
+  :diminish
+  :config
+  (evil-set-undo-system 'undo-tree)
+  (global-undo-tree-mode 1))
 
-(set-face-attribute 'default nil :font "fira code-12")
-(set-face-attribute 'mode-line nil :font "fira code-10")
-(set-face-attribute 'mode-line-inactive nil :font "fira code-10")
-(setq-default line-spacing 3)
-
-
-(global-display-fill-column-indicator-mode 1)
-(setq-default fill-column 120)
-(setq-default display-fill-column-indicator t)
-(setq-default display-fill-column-indicator-character ?|)
 
 ;;; ======================================================
 ;;;
 ;;;   Magit
 ;;;
+
 (use-package magit
     :bind
     (:map magit-file-section-map
@@ -230,8 +224,6 @@ if the new path's directories does not exist, create them."
     (setq magit-define-global-key-bindings 'recommended)
     )
 
-
-(message "init.el has been loaded!")
 
 ;;; ======================================================
 ;;;
@@ -247,7 +239,22 @@ if the new path's directories does not exist, create them."
   (org-ai-global-mode) ; installs global keybindings on C-c M-a
   :config
   (setq org-ai-default-chat-model "gpt-4") ; if you are on the gpt-4 beta:
-  (org-ai-install-yasnippets)) ; if you are using yasnippet and want `ai` snippets
+  (org-ai-install-yasnippets) ; if you are using yasnippet and want `ai` snippets
+  (add-hook 'org-mode-hook 'display-line-numbers-mode))
+  
+
+(use-package visual-fill-column
+  :ensure t
+  :config
+  (setq-default visual-fill-column-width 80)
+  (add-hook 'org-mode-hook  'visual-fill-column-mode)
+  (add-hook 'text-mode-hook 'visual-fill-column-mode))
+
+
+(global-display-fill-column-indicator-mode 1)
+(setq-default fill-column 120)
+(setq-default display-fill-column-indicator t)
+(setq-default display-fill-column-indicator-character ?|)
 
 
 ;;; ======================================================
@@ -255,8 +262,10 @@ if the new path's directories does not exist, create them."
 ;;;   Secret Keys
 ;;;
 
-(load (concat (file-name-directory user-init-file)
-	      "secrets.el"))
+(load (concat
+	   (file-name-directory user-init-file)
+	   "secrets.el"))
+
 
 
 ;;; ======================================================
@@ -270,3 +279,47 @@ if the new path's directories does not exist, create them."
     "Open all recent files."
     (interactive)
     (dolist (file recentf-list) (find-file file)))
+
+
+;;; =======================================================
+;;;
+;;;   My own shortcuts
+;;;
+
+;;; !!!!!! IMPORTANT !!!!!!
+;; default <C-j> was newline-and-indent, which has been replaced by evil
+;; So we use it as an easier-to-press <C-x> alternative
+(global-set-key (kbd "C-j") ctl-x-map)
+
+;; <C-o> instead of <C-x> o since default <C-o> is open-line, which has been replaced by evil
+(global-set-key (kbd "C-o") 'other-window)
+
+(defun split-window-below-and-focus ()
+  (interactive)
+  (split-window-belw)
+  (other-window 1))
+
+(defun split-window-right-and-focus ()
+  (interactive)
+  (split-window-right)
+  (other-window 1))
+
+(global-set-key (kbd "C-x @") 'split-window-below-and-focus)
+(global-set-key (kbd "C-x #") 'split-window-right-and-focus)
+
+;;; =======================================================
+;;;
+;;;   My own theme
+;;;
+
+(set-face-attribute 'default nil :font "fira code-12")
+(set-face-attribute 'mode-line nil :font "fira code-10")
+(set-face-attribute 'mode-line-inactive nil :font "fira code-10")
+(setq-default line-spacing 3)
+
+
+
+;;; ------------ Welcome Message --------------
+
+(message "init.el has been loaded!")
+

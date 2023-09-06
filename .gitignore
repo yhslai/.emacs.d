@@ -3,6 +3,10 @@ auto-save-list/
 transient/
 history
 server/
+recentf
+
+# My test files
+org-test/
 
 # Backup 
 *.el~
