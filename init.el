@@ -1,3 +1,4 @@
+(set-language-environment "UTF-8")
 
 ;; Unset C-z so we don't accidentally hide Emacs
 (global-unset-key (kbd "C-z"))
@@ -184,6 +185,7 @@ if the new path's directories does not exist, create them."
   (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
   (setq evil-want-keybinding nil)
   :config
+  (define-key evil-motion-state-map (kbd "TAB") nil)
   (evil-mode 1))
 
 (use-package evil-collection
@@ -194,17 +196,19 @@ if the new path's directories does not exist, create them."
 
 (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
 (define-key evil-visual-state-map (kbd "C-u") 'evil-scroll-up)
-(define-key evil-insert-state-map (kbd "TAB") 'tab-to-tab-stop)
+;; (define-key evil-insert-state-map (kbd "TAB") 'tab-to-tab-stop) ; Comment out to use default tab behavior
 
 (define-key evil-normal-state-map (kbd "C-o") 'other-window)
 (define-key evil-insert-state-map (kbd "C-o") 'other-window)
 (define-key evil-visual-state-map (kbd "C-o") 'other-window)
+
 
 (use-package undo-tree
   :ensure t
   :after evil
   :diminish
   :config
+  (setq-default undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo-tree")))
   (evil-set-undo-system 'undo-tree)
   (global-undo-tree-mode 1))
 
@@ -271,10 +275,6 @@ if the new path's directories does not exist, create them."
 (define-key org-mode-map (kbd "C-M-j") 'org-forward-heading-same-level)
 (define-key org-mode-map (kbd "C-M-k") 'org-backward-heading-same-level)
 
-;; (global-display-fill-column-indicator-mode 1)
-;; (setq-default fill-column 120)
-;; (setq-default display-fill-column-indicator t)
-;; (setq-default display-fill-column-indicator-character ?|)
 
 
 ;;; ======================================================

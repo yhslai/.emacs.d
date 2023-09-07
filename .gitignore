@@ -5,6 +5,7 @@ history
 server/
 recentf/
 eshell/
+undo-tree/
 
 # My test files
 org-test/
