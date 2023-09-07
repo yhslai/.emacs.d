@@ -311,8 +311,8 @@ if the new path's directories does not exist, create them."
 ;; So we use it as an easier-to-press <C-x> alternative
 (global-set-key (kbd "C-j") ctl-x-map)
 
-;; <C-o> instead of <C-x> o since default <C-o> is open-line, which has been replaced by evil
-(global-set-key (kbd "C-o") 'other-window)
+;; <M-o> as <C-x> o
+(global-set-key (kbd "M-o") 'other-window)
 
 (defun split-window-below-and-focus ()
   (interactive)
@@ -330,7 +330,7 @@ if the new path's directories does not exist, create them."
 
 ;;; =======================================================
 ;;;
-;;;   My own theme
+;;;   My Own Theme
 ;;;
 
 (set-face-attribute 'default nil :font "fira code-12")
@@ -338,6 +338,43 @@ if the new path's directories does not exist, create them."
 (set-face-attribute 'mode-line-inactive nil :font "fira code-10")
 (setq-default line-spacing 3)
 
+
+;;; =======================================================
+;;;
+;;;   Spell Checking
+;;;
+
+(use-package languagetool
+  :ensure t
+  :defer t
+  :commands (languagetool-check
+             languagetool-clear-suggestions
+             languagetool-correct-at-point
+             languagetool-correct-buffer
+             languagetool-set-language
+             languagetool-server-mode
+             languagetool-server-start
+             languagetool-server-stop)
+  :config
+)
+
+(setq languagetool-java-arguments '("-Dfile.encoding=UTF-8"))
+(setq languagetool-console-command "~/languagetool/languagetool-commandline.jar")
+(setq languagetool-server-command "~/languagetool/languagetool-server.jar")
+
+;; (cond
+;;  ((string-equal system-type "windows-nt")
+;;   (progn
+;; 	(setq ispell-program-name
+;; 		(concat (getenv "PROGRAMFILES") "/hunspell/bin/hunspell.exe"))
+;; 	))
+;;  )
+
+;; (use-package flyspell
+;;   :ensure t
+;;   :init
+;;   (add-hook 'org-mode-hook
+;;             (lambda () (flyspell-mode 1))))
 
 
 ;;; ------------ Welcome Message --------------
