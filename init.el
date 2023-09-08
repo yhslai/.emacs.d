@@ -275,6 +275,9 @@ if the new path's directories does not exist, create them."
 (define-key org-mode-map (kbd "C-M-j") 'org-forward-heading-same-level)
 (define-key org-mode-map (kbd "C-M-k") 'org-backward-heading-same-level)
 
+;; Slightly weird but we switch M-j and M-x too
+(define-key org-mode-map (kbd "<normal-state> M-j") nil)
+(define-key org-mode-map (kbd "<normal-state> M-x") 'outline-move-subtree-down)
 
 
 ;;; ======================================================
@@ -311,8 +314,8 @@ if the new path's directories does not exist, create them."
 ;; So we use it as an easier-to-press <C-x> alternative
 (global-set-key (kbd "C-j") ctl-x-map)
 
-;; <M-o> as <C-x> o
-(global-set-key (kbd "M-o") 'other-window)
+;; <M-j> as <M-x>
+(global-set-key (kbd "M-j") 'execute-extended-command)
 
 (defun split-window-below-and-focus ()
   (interactive)
