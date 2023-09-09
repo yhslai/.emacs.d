@@ -3,6 +3,18 @@
 ;; Unset C-z so we don't accidentally hide Emacs
 (global-unset-key (kbd "C-z"))
 
+(setq gc-cons-threshold 10000000)
+(setq byte-compile-warnings '(not obsolete))
+(setq warning-suppress-log-types '((comp) (bytecomp)))
+(setq native-comp-async-report-warnings-errors 'silent)
+
+;; Silence stupid startup message
+(setq inhibit-startup-echo-area-message (user-login-name))
+
+;; Default frame configuration: full screen, good-looking title bar on macOS
+(setq frame-resize-pixelwise t)
+(tool-bar-mode -1)                      ; All these tools are in the menu-bar anyway
+
 ;; Start with maximized window by default
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
@@ -317,6 +329,10 @@ if the new path's directories does not exist, create them."
 ;; <M-j> as <M-x>
 (global-set-key (kbd "M-j") 'execute-extended-command)
 
+;; Removed conflicted keys in eshell mode
+(define-key eshell-mode-map (kbd "<normal-state> C-j") nil)
+(define-key eshell-mode-map (kbd "<visual-state> C-j") nil)
+
 (defun split-window-below-and-focus ()
   (interactive)
   (split-window-below)
@@ -378,6 +394,33 @@ if the new path's directories does not exist, create them."
 ;;   :init
 ;;   (add-hook 'org-mode-hook
 ;;             (lambda () (flyspell-mode 1))))
+
+
+
+;;; =======================================================
+;;;
+;;;   General Dev Tools
+;;;
+
+(use-package eglot
+  :ensure t
+)
+
+(use-package tree-sitter
+  :ensure t
+)
+
+;;; =======================================================
+;;;
+;;;   Lua Mode
+;;;
+
+(use-package lua-mode
+  :ensure t
+  :config
+  (setq lua-indent-level 4)
+)
+
 
 
 ;;; ------------ Welcome Message --------------
