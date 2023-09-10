@@ -32,7 +32,7 @@
   (load custom-file))
 
 ;; Split vertically if there is enough space available
-(setq split-width-threshold 100)
+(setq split-width-threshold 120)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
