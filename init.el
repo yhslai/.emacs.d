@@ -35,6 +35,37 @@
 ;; Split vertically if there is enough space available
 (setq split-width-threshold 120)
 
+
+;; A few more useful configurations... (recommened by Vertico and Corfu)
+(use-package emacs
+  :init
+  ;; Add prompt indicator to `completing-read-multiple'.
+  ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
+  (defun crm-indicator (args)
+    (cons (format "[CRM%s] %s"
+                  (replace-regexp-in-string
+                   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                   crm-separator)
+                  (car args))
+          (cdr args)))
+  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+  ;; Do not allow the cursor in the minibuffer prompt
+  (setq minibuffer-prompt-properties
+        '(read-only t cursor-intangible t face minibuffer-prompt))
+  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+
+  ;; TAB cycle if there are only few candidates
+  (setq completion-cycle-threshold 5)
+
+  ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
+  ;; Vertico commands are hidden in normal buffers.
+  (setq read-extended-command-predicate
+        #'command-completion-default-include-p)
+
+  ;; Enable recursive minibuffers
+  (setq enable-recursive-minibuffers t))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;;   emacs-bedrock: ttps://git.sr.ht/~ashton314/emacs-bedrock/tree/main/item/init.el
@@ -327,7 +358,8 @@ if the new path's directories does not exist, create them."
 		desktop-load-locked-desktop nil
 		desktop-auto-save-timeout   30
 		desktop-restore-frames      t
-		desktop-restore-eager 3)
+		;; desktop-restore-eager 3 ; Seems problematic... prevent Emacs from properly redraw
+		)
   :config
   ;; (add-to-list 'desktop-modes-not-to-save 'info-mode)
   ;; (add-to-list 'desktop-modes-not-to-save 'dired-mode)
@@ -366,7 +398,6 @@ if the new path's directories does not exist, create them."
   (split-window-right)
   (other-window 1))
 
-(global-set-key (kbd "C-x #") nil)
 (global-set-key (kbd "C-x @") 'split-window-below-and-focus)
 (global-set-key (kbd "C-x #") 'split-window-right-and-focus)
 
@@ -467,35 +498,6 @@ if the new path's directories does not exist, create them."
   (vertico-mode)
   )
 
-;; A few more useful configurations... (recommened by Vertico and Corfu)
-(use-package emacs
-  :init
-  ;; Add prompt indicator to `completing-read-multiple'.
-  ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
-  (defun crm-indicator (args)
-    (cons (format "[CRM%s] %s"
-                  (replace-regexp-in-string
-                   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
-                   crm-separator)
-                  (car args))
-          (cdr args)))
-  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
-
-  ;; Do not allow the cursor in the minibuffer prompt
-  (setq minibuffer-prompt-properties
-        '(read-only t cursor-intangible t face minibuffer-prompt))
-  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
-
-  ;; TAB cycle if there are only few candidates
-  (setq completion-cycle-threshold 5)
-
-  ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
-  ;; Vertico commands are hidden in normal buffers.
-  (setq read-extended-command-predicate
-        #'command-completion-default-include-p)
-
-  ;; Enable recursive minibuffers
-  (setq enable-recursive-minibuffers t))
 
 (use-package corfu
   ;; Optional customizations
@@ -538,7 +540,7 @@ if the new path's directories does not exist, create them."
   :init
   (projectile-mode +1)
   :bind (:map projectile-mode-map
-			  ("s-p" . projectile-command-map)
+			  ("M-p" . projectile-command-map)
 			  ("C-c p" . projectile-command-map)))
 
 
