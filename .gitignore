@@ -8,6 +8,7 @@ recentf
 eshell/
 undo-tree/
 projectile-*.eld
+projectile.cache
 
 # Third-party binaries
 tree-sitter/

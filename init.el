@@ -366,6 +366,7 @@ if the new path's directories does not exist, create them."
   (split-window-right)
   (other-window 1))
 
+(global-set-key (kbd "C-x #") nil)
 (global-set-key (kbd "C-x @") 'split-window-below-and-focus)
 (global-set-key (kbd "C-x #") 'split-window-right-and-focus)
 
@@ -551,7 +552,8 @@ if the new path's directories does not exist, create them."
 (use-package lua-mode
   :ensure t
   :config
-  (setq lua-indent-level 4)
+  (setq lua-indent-level 2)
+  (setq lua-indent-close-paren-align nil)
   )
 
 
