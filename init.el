@@ -26,13 +26,13 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
-
 ;; Set up a custom-file so customization variables (e.g. package-selected-packaged used by Package.el)
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (file-exists-p custom-file)
   (load custom-file))
 
-
+;; Split vertically if there is enough space available
+(setq split-width-threshold 100)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -196,6 +196,7 @@ if the new path's directories does not exist, create them."
   :init
   (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
   (setq evil-want-keybinding nil)
+  (setq evil-respect-visual-line-mode t)
   :config
   (define-key evil-motion-state-map (kbd "TAB") nil)
   (evil-mode 1))
@@ -330,8 +331,8 @@ if the new path's directories does not exist, create them."
 (global-set-key (kbd "M-j") 'execute-extended-command)
 
 ;; Removed conflicted keys in eshell mode
-(define-key eshell-mode-map (kbd "<normal-state> C-j") nil)
-(define-key eshell-mode-map (kbd "<visual-state> C-j") nil)
+;; (define-key eshell-mode-map (kbd "<normal-state> C-j") nil)
+;; (define-key eshell-mode-map (kbd "<visual-state> C-j") nil)
 
 (defun split-window-below-and-focus ()
   (interactive)
@@ -345,6 +346,18 @@ if the new path's directories does not exist, create them."
 
 (global-set-key (kbd "C-x @") 'split-window-below-and-focus)
 (global-set-key (kbd "C-x #") 'split-window-right-and-focus)
+
+;; Default is `list-buffers, but `buffer-menu opens in the current window and I prefer it
+(global-set-key (kbd "C-x C-b") 'buffer-menu)
+
+
+;; Don't clutter the current directory with autosaves and backups
+(setq backup-directory-alist
+      `(("." . ,(expand-file-name
+                 (concat user-emacs-directory "autosaves")))))
+
+(setq auto-save-file-name-transforms
+      `((".*" ,(concat user-emacs-directory "autosaves/") t)))
 
 
 ;;; =======================================================
@@ -406,6 +419,7 @@ if the new path's directories does not exist, create them."
   :ensure t
 )
 
+;; Remember to put compiled tree-sitter libraries in ~/.emacs.d/tree-sitter
 (use-package tree-sitter
   :ensure t
 )

@@ -7,6 +7,9 @@ recentf
 eshell/
 undo-tree/
 
+# Third-party binaries
+tree-sitter/
+
 # My test files
 org-test/
 
