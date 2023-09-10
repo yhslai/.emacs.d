@@ -22,9 +22,6 @@ org-test/
 # Compiled Elisp files
 *.elc
 
-# Custom file (this is typically where `customize` saves its settings, and it can vary depending on your setup)
-custom.el
-
 # Package management (unless you want to version-control all installed packages, which is generally not recommended)
 elpa/
 quelpa/
