@@ -357,17 +357,18 @@ if the new path's directories does not exist, create them."
 		desktop-save                t
 		desktop-load-locked-desktop nil
 		desktop-auto-save-timeout   30
-		desktop-restore-frames      t
-		;; desktop-restore-eager 3 ; Seems problematic... prevent Emacs from properly redraw
+		;; desktop-restore-frames      t
+		;; lazy reloading is problematic, preventing Emacs from properly redraw itself
+		desktop-restore-eager       t
 		)
   :config
-  ;; (add-to-list 'desktop-modes-not-to-save 'info-mode)
+  (desktop-save-mode 1)
+  (add-to-list 'desktop-modes-not-to-save 'magit-status-mode)
   ;; (add-to-list 'desktop-modes-not-to-save 'dired-mode)
   ;; (add-to-list 'desktop-modes-not-to-save 'fundamental-mode)
   ;; (add-to-list 'desktop-modes-not-to-save 'info-lookup-mode)
 )
 
-(desktop-save-mode 1)
 
 
 
@@ -471,6 +472,8 @@ if the new path's directories does not exist, create them."
 
 (use-package eglot
   :ensure t
+  :config
+  (add-hook 'prog-mode-hook 'eglot-ensure)
   )
 
 ;; Remember to put compiled tree-sitter libraries in ~/.emacs.d/tree-sitter
