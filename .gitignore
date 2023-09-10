@@ -1,11 +1,13 @@
 # Transient & auto-save
 auto-save-list/
 transient/
+desktop/
 history
 server/
 recentf
 eshell/
 undo-tree/
+projectile-*.eld
 
 # Third-party binaries
 tree-sitter/

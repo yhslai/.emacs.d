@@ -25,6 +25,7 @@
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
+;; (package-refresh-contents)
 
 ;; Set up a custom-file so customization variables (e.g. package-selected-packaged used by Package.el)
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
@@ -306,7 +307,7 @@ if the new path's directories does not exist, create them."
 
 ;;; ======================================================
 ;;;
-;;;   Custom functions and minor modes
+;;;   Misc functions and minor modes
 ;;;
 
 (recentf-mode 1)
@@ -315,6 +316,27 @@ if the new path's directories does not exist, create them."
     "Open all recent files."
     (interactive)
     (dolist (file recentf-list) (find-file file)))
+
+(use-package desktop
+  :init
+  (setq desktop-dirname             "~/.emacs.d/desktop/"
+		desktop-base-file-name      "emacs.desktop"
+		desktop-base-lock-name      "lock"
+		desktop-path                (list desktop-dirname)
+		desktop-save                t
+		desktop-load-locked-desktop nil
+		desktop-auto-save-timeout   30
+		desktop-restore-frames      t
+		desktop-restore-eager 3)
+  :config
+  ;; (add-to-list 'desktop-modes-not-to-save 'info-mode)
+  ;; (add-to-list 'desktop-modes-not-to-save 'dired-mode)
+  ;; (add-to-list 'desktop-modes-not-to-save 'fundamental-mode)
+  ;; (add-to-list 'desktop-modes-not-to-save 'info-lookup-mode)
+)
+
+(desktop-save-mode 1)
+
 
 
 ;;; =======================================================
@@ -417,12 +439,109 @@ if the new path's directories does not exist, create them."
 
 (use-package eglot
   :ensure t
-)
+  )
 
 ;; Remember to put compiled tree-sitter libraries in ~/.emacs.d/tree-sitter
 (use-package tree-sitter
   :ensure t
-)
+  )
+
+
+;; Enable vertico
+(use-package vertico
+  :init
+
+  ;; Different scroll margin
+  ;; (setq vertico-scroll-margin 0)
+
+  ;; Show more candidates
+  ;; (setq vertico-count 20)
+
+  ;; Grow and shrink the Vertico minibuffer
+  ;; (setq vertico-resize t)
+
+  ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
+  ;; (setq vertico-cycle t)
+  :config
+  (vertico-mode)
+  )
+
+;; A few more useful configurations... (recommened by Vertico and Corfu)
+(use-package emacs
+  :init
+  ;; Add prompt indicator to `completing-read-multiple'.
+  ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
+  (defun crm-indicator (args)
+    (cons (format "[CRM%s] %s"
+                  (replace-regexp-in-string
+                   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                   crm-separator)
+                  (car args))
+          (cdr args)))
+  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+  ;; Do not allow the cursor in the minibuffer prompt
+  (setq minibuffer-prompt-properties
+        '(read-only t cursor-intangible t face minibuffer-prompt))
+  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+
+  ;; TAB cycle if there are only few candidates
+  (setq completion-cycle-threshold 5)
+
+  ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
+  ;; Vertico commands are hidden in normal buffers.
+  (setq read-extended-command-predicate
+        #'command-completion-default-include-p)
+
+  ;; Enable recursive minibuffers
+  (setq enable-recursive-minibuffers t))
+
+(use-package corfu
+  ;; Optional customizations
+  ;; :custom
+  ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+  ;; (corfu-auto t)                 ;; Enable auto completion
+  ;; (corfu-separator ?\s)          ;; Orderless field separator
+  ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+  ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
+  ;; (corfu-preview-current nil)    ;; Disable current candidate preview
+  ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
+  ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
+  ;; (corfu-scroll-margin 5)        ;; Use scroll margin
+
+  ;; Enable Corfu only for certain modes.
+  ;; :hook ((prog-mode . corfu-mode)
+  ;;        (shell-mode . corfu-mode)
+  ;;        (eshell-mode . corfu-mode))
+
+  ;; Recommended: Enable Corfu globally.
+  ;; This is recommended since Dabbrev can be used globally (M-/).
+  ;; See also `global-corfu-modes'.
+  :init
+  (global-corfu-mode))
+
+
+;; Optionally use the `orderless' completion style.
+(use-package orderless
+  :init
+  ;; Configure a custom style dispatcher (see the Consult wiki)
+  ;; (setq orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch)
+  ;;       orderless-component-separator #'orderless-escapable-split-on-space)
+  (setq completion-styles '(orderless basic)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles partial-completion)))))
+
+
+(use-package projectile
+  :ensure t
+  :init
+  (projectile-mode +1)
+  :bind (:map projectile-mode-map
+			  ("s-p" . projectile-command-map)
+			  ("C-c p" . projectile-command-map)))
+
+
+
 
 ;;; =======================================================
 ;;;
@@ -433,7 +552,7 @@ if the new path's directories does not exist, create them."
   :ensure t
   :config
   (setq lua-indent-level 4)
-)
+  )
 
 
 
