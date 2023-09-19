@@ -33,7 +33,7 @@
   (load custom-file))
 
 ;; Split vertically if there is enough space available
-(setq split-width-threshold 120)
+(setq split-width-threshold 160)
 
 
 ;; A few more useful configurations... (recommened by Vertico and Corfu)
@@ -231,7 +231,15 @@ if the new path's directories does not exist, create them."
   (setq evil-respect-visual-line-mode t)
   :config
   (define-key evil-motion-state-map (kbd "TAB") nil)
-  (evil-mode 1))
+  (evil-mode 1)
+  (modify-syntax-entry ?_ "w")
+  )
+
+;; w / b jump between symbols (including _-) instead of words
+(with-eval-after-load 'evil
+  (defalias #'forward-evil-word #'forward-evil-symbol)
+  ;; make evil-search-word look for symbol rather than word boundaries
+  (setq-default evil-symbol-word-search t))
 
 (use-package evil-collection
   :after evil
@@ -243,9 +251,17 @@ if the new path's directories does not exist, create them."
 (define-key evil-visual-state-map (kbd "C-u") 'evil-scroll-up)
 ;; (define-key evil-insert-state-map (kbd "TAB") 'tab-to-tab-stop) ; Comment out to use default tab behavior
 
-(define-key evil-normal-state-map (kbd "C-o") 'other-window)
-(define-key evil-insert-state-map (kbd "C-o") 'other-window)
-(define-key evil-visual-state-map (kbd "C-o") 'other-window)
+
+(defun switch-and-zoom ()
+  "Switch to the other window, then zoom."
+  (interactive)
+  (other-window 1)
+  (zoom))     ; Assume here that `zoom` is available 
+
+(global-set-key (kbd "C-o") 'switch-and-zoom)
+(define-key evil-normal-state-map (kbd "C-o") 'switch-and-zoom)
+(define-key evil-insert-state-map (kbd "C-o") 'switch-and-zoom)
+(define-key evil-visual-state-map (kbd "C-o") 'switch-and-zoom)
 
 
 (use-package undo-tree
@@ -257,6 +273,16 @@ if the new path's directories does not exist, create them."
   (evil-set-undo-system 'undo-tree)
   (global-undo-tree-mode 1))
 
+
+(use-package evil-owl
+  :config
+  (setq evil-owl-max-string-length 500)
+  (add-to-list 'display-buffer-alist
+               '("*evil-owl*"
+                 (display-buffer-in-side-window)
+                 (side . bottom)
+                 (window-height . 0.3)))
+  (evil-owl-mode))
 
 ;;; ======================================================
 ;;;
@@ -285,7 +311,7 @@ if the new path's directories does not exist, create them."
 (use-package visual-fill-column
   :ensure t
   :config
-  (setq-default visual-fill-column-width 100)
+  (setq-default visual-fill-column-width 110)
   (add-hook 'visual-line-mode-hook #'visual-fill-column-mode))
 
 (use-package org
@@ -297,6 +323,7 @@ if the new path's directories does not exist, create them."
     ))
 
 (use-package org-ai
+  :load-path (lambda () (expand-file-name "local-packages/org-ai" user-emacs-directory))
   :ensure t
   :commands (org-ai-mode
              org-ai-global-mode)
@@ -399,6 +426,8 @@ if the new path's directories does not exist, create them."
   (split-window-right)
   (other-window 1))
 
+(global-unset-key (kbd "C-x @"))
+(global-unset-key (kbd "C-x #"))
 (global-set-key (kbd "C-x @") 'split-window-below-and-focus)
 (global-set-key (kbd "C-x #") 'split-window-right-and-focus)
 
@@ -474,6 +503,10 @@ if the new path's directories does not exist, create them."
   :ensure t
   :config
   (add-hook 'prog-mode-hook 'eglot-ensure)
+  (add-hook 'prog-mode-hook
+			(lambda () (local-set-key (kbd "<f2>") #'eglot-rename)))
+  (add-hook 'prog-mode-hook
+			(lambda () (local-set-key (kbd "M-<f2>") #'flymake-goto-next-error)))
   )
 
 ;; Remember to put compiled tree-sitter libraries in ~/.emacs.d/tree-sitter
@@ -504,14 +537,14 @@ if the new path's directories does not exist, create them."
 
 (use-package corfu
   ;; Optional customizations
-  ;; :custom
-  ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
-  ;; (corfu-auto t)                 ;; Enable auto completion
+  :custom
+  (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+  (corfu-auto t)                 ;; Enable auto completion
   ;; (corfu-separator ?\s)          ;; Orderless field separator
   ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
   ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
   ;; (corfu-preview-current nil)    ;; Disable current candidate preview
-  ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
+  (corfu-preselect 'prompt)      ;; Preselect the prompt
   ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
   ;; (corfu-scroll-margin 5)        ;; Use scroll margin
 
@@ -519,6 +552,14 @@ if the new path's directories does not exist, create them."
   ;; :hook ((prog-mode . corfu-mode)
   ;;        (shell-mode . corfu-mode)
   ;;        (eshell-mode . corfu-mode))
+
+  :bind
+  (:map corfu-map
+		("TAB" . corfu-next)
+		([tab] . corfu-next)
+		("S-TAB" . corfu-previous)
+		([backtab] . corfu-previous)
+		)
 
   ;; Recommended: Enable Corfu globally.
   ;; This is recommended since Dabbrev can be used globally (M-/).
@@ -546,8 +587,37 @@ if the new path's directories does not exist, create them."
 			  ("M-p" . projectile-command-map)
 			  ("C-c p" . projectile-command-map)))
 
+(use-package ripgrep
+  :load-path (lambda() (expand-file-name "local-packages/ripgrep.el" user-emacs-directory))
+  :ensure t)
+
+(use-package projectile-ripgrep
+  :load-path (lambda() (expand-file-name "local-packages/ripgrep.el" user-emacs-directory))
+  :ensure t)
 
 
+(use-package string-inflection
+  :ensure t)
+
+
+(defun zoom-size-callback ()
+  (cond ((> (frame-pixel-width) 1280) '(115 . 0.75))
+        (t                            '(0.5 . 0.5))))
+
+(use-package zoom
+  :ensure t
+  :init
+  (setq zoom-size 'zoom-size-callback)
+  (setq zoom-ignored-major-modes '(dired-mode magit-mode)
+		zoom-ignored-buffer-names '("zoom.el" "init.e")
+		zoom-ignored-buffer-name-regexps '("^*calc")
+		)
+  :config
+  ;; (zoom-mode t) ; Quite buggy...
+  )
+
+
+(add-to-list 'auto-mode-alist '("\\.hdgsave\\'" . js-json-mode))
 
 ;;; =======================================================
 ;;;
@@ -557,7 +627,7 @@ if the new path's directories does not exist, create them."
 (use-package lua-mode
   :ensure t
   :config
-  (setq lua-indent-level 2)
+  (setq lua-indent-level 4)
   (setq lua-indent-close-paren-align nil)
   )
 

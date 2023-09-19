@@ -1,0 +1,6 @@
+[submodule "local-packages/org-ai"]
+	path = local-packages/org-ai
+	url = git@github.com:yhslai/org-ai.git
+[submodule "local-packages/ripgrep.el"]
+	path = local-packages/ripgrep.el
+	url = git@github.com:yhslai/ripgrep.el.git
