@@ -509,6 +509,8 @@ if the new path's directories does not exist, create them."
   (add-hook 'prog-mode-hook
 			(lambda () (local-set-key (kbd "<f2>") #'eglot-rename)))
   (add-hook 'prog-mode-hook
+			(lambda () (local-set-key (kbd "S-<f2>") #'eglot-code-actions)))
+  (add-hook 'prog-mode-hook
 			(lambda () (local-set-key (kbd "M-<f2>") #'flymake-goto-next-error)))
   ;; (add-hook 'eglot--managed-mode-hook (lambda () (flymake-mode -1)))
   )
@@ -627,6 +629,8 @@ if the new path's directories does not exist, create them."
 (winner-mode)
 (define-key winner-mode-map (kbd "C-c q") #'winner-undo)
 (define-key winner-mode-map (kbd "C-c e") #'winner-redo)
+
+(define-key prog-mode-map (kbd "<f1>") #'eldoc)
 
 ;;; =======================================================
 ;;;
