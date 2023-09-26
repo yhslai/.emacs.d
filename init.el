@@ -351,6 +351,9 @@ if the new path's directories does not exist, create them."
 (define-key org-mode-map (kbd "<normal-state> M-j") nil)
 (define-key org-mode-map (kbd "<normal-state> M-x") 'outline-move-subtree-down)
 
+;; Org agenda
+(define-key org-mode-map (kbd "C-c a") 'org-agenda)
+
 
 ;;; ======================================================
 ;;;
@@ -507,7 +510,10 @@ if the new path's directories does not exist, create them."
 			(lambda () (local-set-key (kbd "<f2>") #'eglot-rename)))
   (add-hook 'prog-mode-hook
 			(lambda () (local-set-key (kbd "M-<f2>") #'flymake-goto-next-error)))
+  ;; (add-hook 'eglot--managed-mode-hook (lambda () (flymake-mode -1)))
   )
+
+(setq flymake-no-changes-timeout 0.2)
 
 ;; Remember to put compiled tree-sitter libraries in ~/.emacs.d/tree-sitter
 (use-package tree-sitter
@@ -616,6 +622,14 @@ if the new path's directories does not exist, create them."
   ;; (zoom-mode t) ; Quite buggy...
   )
 
+;; C-c left to undo window change (e.g. dismiss a pop-up)
+(winner-mode)
+
+;;; =======================================================
+;;;
+;;;   HDG
+;;;
+;; HDG's save file is actually JSON for now
 
 (add-to-list 'auto-mode-alist '("\\.hdgsave\\'" . js-json-mode))
 
@@ -632,6 +646,26 @@ if the new path's directories does not exist, create them."
   )
 
 
+;;; =======================================================
+;;;
+;;;   Rust Mode
+;;;
+
+(use-package rust-mode
+  :ensure t
+  :config
+  (setq rust-format-on-save t)
+  )
+
+(add-hook 'rust-mode-hook
+          (lambda () (setq indent-tabs-mode nil)))
+
+(add-hook 'rust-mode-hook 'eglot-ensure)
+
+(use-package cargo-mode
+  :config
+  (add-hook 'rust-mode-hook 'cargo-minor-mode))
+		  
 
 ;;; ------------ Welcome Message --------------
 
