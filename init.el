@@ -622,8 +622,11 @@ if the new path's directories does not exist, create them."
   ;; (zoom-mode t) ; Quite buggy...
   )
 
-;; C-c left to undo window change (e.g. dismiss a pop-up)
+;; C-c q to undo window change (e.g. dismiss a pop-up)
+(setq winner-dont-bind-my-keys t)
 (winner-mode)
+(define-key winner-mode-map (kbd "C-c q") #'winner-undo)
+(define-key winner-mode-map (kbd "C-c e") #'winner-redo)
 
 ;;; =======================================================
 ;;;
