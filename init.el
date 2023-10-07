@@ -404,7 +404,7 @@ if the new path's directories does not exist, create them."
 
 ;;; =======================================================
 ;;;
-;;;   My own shortcuts
+;;;   My own shortcuts and functions
 ;;;
 
 ;;; !!!!!! IMPORTANT !!!!!!
@@ -445,6 +445,14 @@ if the new path's directories does not exist, create them."
 
 (setq auto-save-file-name-transforms
       `((".*" ,(concat user-emacs-directory "autosaves/") t)))
+
+
+;; Reload .dir-locals for the current buffer
+(defun my-reload-dir-locals-for-current-buffer ()
+  "reload dir locals for the current buffer"
+  (interactive)
+  (let ((enable-local-variables :all))
+    (hack-dir-local-variables-non-file-buffer)))
 
 
 ;;; =======================================================
@@ -548,6 +556,8 @@ if the new path's directories does not exist, create them."
   :custom
   (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
   (corfu-auto t)                 ;; Enable auto completion
+  (corfu-auto-delay 0.1)
+  (corfu-auto-prefix 2)
   ;; (corfu-separator ?\s)          ;; Orderless field separator
   ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
   ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
@@ -575,7 +585,6 @@ if the new path's directories does not exist, create them."
   :init
   (global-corfu-mode))
 
-
 ;; Optionally use the `orderless' completion style.
 (use-package orderless
   :init
@@ -602,6 +611,26 @@ if the new path's directories does not exist, create them."
 (use-package projectile-ripgrep
   :load-path (lambda() (expand-file-name "local-packages/ripgrep.el" user-emacs-directory))
   :ensure t)
+
+;; eglot relies project.el to find project roots, so we need this to ensure project root
+;; Try rust projects before version-control (vc) projects
+(defun my-project-try-cargo-toml (dir)
+  (when-let* ((output
+               (let ((default-directory dir))
+                 (shell-command-to-string "cargo metadata --no-deps --format-version 1")))
+              (js (ignore-errors (json-read-from-string output)))
+              (found (cdr (assq 'workspace_root js))))
+    (cons 'eglot-project found)))
+
+(cl-defmethod project-roots ((project (head eglot-project)))
+  (list (cdr project)))
+
+(use-package project
+  ;; Cannot use :hook because 'project-find-functions does not end in -hook
+  ;; Cannot use :init (must use :config) because otherwise
+  ;; project-find-functions is not yet initialized.
+  :config
+  (add-hook 'project-find-functions #'my-project-try-cargo-toml))
 
 
 (use-package string-inflection
@@ -632,6 +661,13 @@ if the new path's directories does not exist, create them."
 
 (define-key prog-mode-map (kbd "<f1>") #'eldoc)
 
+(use-package markdown-mode
+  :ensure t
+  :config
+  (setq markdown-fontify-code-blocks-natively t))
+
+
+
 ;;; =======================================================
 ;;;
 ;;;   HDG
@@ -639,6 +675,7 @@ if the new path's directories does not exist, create them."
 ;; HDG's save file is actually JSON for now
 
 (add-to-list 'auto-mode-alist '("\\.hdgsave\\'" . js-json-mode))
+
 
 ;;; =======================================================
 ;;;
@@ -660,8 +697,6 @@ if the new path's directories does not exist, create them."
 
 (use-package rust-mode
   :ensure t
-  :config
-  (setq rust-format-on-save t)
   )
 
 (add-hook 'rust-mode-hook
@@ -678,3 +713,4 @@ if the new path's directories does not exist, create them."
 
 (message "init.el has been loaded!")
 
+(put 'erase-buffer 'disabled nil)
