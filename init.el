@@ -438,6 +438,11 @@ if the new path's directories does not exist, create them."
 (global-set-key (kbd "C-x C-b") 'buffer-menu)
 
 
+;; Move by function
+(global-set-key (kbd "M-<up>") 'beginning-of-defun)
+(global-set-key (kbd "M-<down>") 'end-of-defun)
+
+
 ;; Don't clutter the current directory with autosaves and backups
 (setq backup-directory-alist
       `(("." . ,(expand-file-name
